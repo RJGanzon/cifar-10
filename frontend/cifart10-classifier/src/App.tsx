@@ -45,11 +45,16 @@ function App() {
             }}
           ></input>
           {uploadedImage ? (
-            <img
-              src={currentImage}
-              alt="Event cover"
-              className="absolute z-20 aspect-video w-full object-cover brightness-90"
-            />
+            <>
+              <img
+                src={currentImage}
+                alt="Event cover"
+                className="absolute z-20 aspect-video w-full object-cover brightness-90"
+              />
+              <div className="absolute inset-0 z-30 bg-white/30 backdrop-blur-[1px] flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
+                <Plus className="h-8 w-8 text-slate-600" />
+              </div>
+            </>
           ) : (
             <Plus className="h-8 w-8" />
           )}
