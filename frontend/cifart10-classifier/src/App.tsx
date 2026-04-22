@@ -1,35 +1,65 @@
-import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState, useRef } from "react";
 import {
   Card,
-  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
-  Badge,
-  Button,
   CardTitle,
 } from "@/components/ui/card";
 import "./App.css";
+import frogimg from "./assets/frog.jpg";
 
 function App() {
+  const [uploadedImage, setUploadedImage] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
+  const uploadImage = useRef<HTMLInputElement>(null);
+
+  function updateImageUrl() {
+    const file = uploadImage.current?.files?.[0];
+    if (file) {
+      setUploadedImage(true);
+      //Converts file object to a useable URL
+      const imgURL = URL.createObjectURL(file);
+      setCurrentImage(imgURL);
+    }
+  }
+
   return (
-    <div className="flex items-center justify-center h-screen bg-black bg-[radial-gradient(ellipse_at_bottom,rgba(255,255,255,0.25),transparent_70%)]">
+    <div className="flex items-center justify-center h-screen bg-black bg-[radial-gradient(ellipse_100%_60%_at_50%_100%,rgba(255,255,255,0.12),transparent_70%)]">
       <Card className="relative mx-auto w-full max-w-sm pt-0">
-        <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-        <img
-          src="https://avatar.vercel.sh/shadcn1"
-          alt="Event cover"
-          className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-        />
-        <CardHeader>
-          <CardAction>
-            <Badge variant="secondary">Featured</Badge>
-          </CardAction>
-          <CardTitle>Design systems meetup</CardTitle>
-          <CardDescription>
-            A practical talk on component APIs, accessibility, and shipping
-            faster.
+        <div
+          className="relative z-20 flex aspect-video w-full items-center justify-center rounded-lg hover:cursor-pointer bg-muted/40 transition duration-200 hover:bg-muted/100 text-muted-foreground"
+          onClick={() => {
+            uploadImage.current?.click();
+          }}
+        >
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={uploadImage}
+            onChange={() => {
+              updateImageUrl();
+            }}
+          ></input>
+          {uploadedImage ? (
+            <img
+              src={currentImage}
+              alt="Event cover"
+              className="absolute z-20 aspect-video w-full object-cover brightness-90"
+            />
+          ) : (
+            <Plus className="h-8 w-8" />
+          )}
+        </div>
+        <CardHeader className="flex flex-col items-center">
+          <CardTitle>Cifar-10 Classifier</CardTitle>
+          <CardDescription className="text-center">
+            Upload an image from your device and the CIFAR-10 model will
+            classify it into one of ten categories: airplane, automobile, bird,
+            cat, deer, dog, frog, horse, ship, or truck.
           </CardDescription>
         </CardHeader>
         <CardFooter>
