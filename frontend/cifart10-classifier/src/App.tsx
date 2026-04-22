@@ -23,6 +23,9 @@ function App() {
     if (file) {
       setUploadedImage(true);
       setCurrentImage(file);
+      if (selectedImageURL) {
+        URL.revokeObjectURL(selectedImageURL);
+      }
       setselectedImageURL(URL.createObjectURL(file));
     }
   }
