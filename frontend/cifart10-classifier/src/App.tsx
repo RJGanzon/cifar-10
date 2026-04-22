@@ -76,7 +76,15 @@ function App() {
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="w-full">Get Type</Button>
+          <Button
+            className="w-full"
+            onClick={() => {
+              predictClass(currentImage);
+            }}
+            disabled={!uploadedImage}
+          >
+            Get Type
+          </Button>
         </CardFooter>
       </Card>
     </div>

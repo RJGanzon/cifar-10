@@ -17,7 +17,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/post': {
-        target: 'http://localhost:8000', // your backend URL
+        target: 'http://localhost:5000', // your backend URL
         changeOrigin: true,
       }
     }
