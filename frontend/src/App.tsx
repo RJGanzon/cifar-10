@@ -9,14 +9,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import "./App.css";
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(false);
   const [currentImage, setCurrentImage] = useState<File | null>(null);
   const [selectedImageURL, setselectedImageURL] = useState<string>("");
-
+  const [openState, setOpenState] = useState(false);
   const uploadImage = useRef<HTMLInputElement>(null);
+
+  const CIFAR_CLASSES = [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
+  ];
 
   function updateImage() {
     const file = uploadImage.current?.files?.[0];
@@ -36,6 +61,11 @@ function App() {
     const res = await axios.post("/post/predict-type", formData);
 
     return res.data;
+  }
+
+  function getHighestPrediction(arr: number[]) {
+    const maxIndex = arr.indexOf(Math.max(...arr));
+    return CIFAR_CLASSES[maxIndex];
   }
 
   return (
@@ -85,7 +115,10 @@ function App() {
             onClick={async () => {
               if (currentImage) {
                 const classPredictions = await predictClass(currentImage);
-                console.log(classPredictions);
+                const class_highest = getHighestPrediction(
+                  classPredictions.prediction[0],
+                );
+                console.log(class_highest);
               }
             }}
             disabled={!uploadedImage}
@@ -94,6 +127,23 @@ function App() {
           </Button>
         </CardFooter>
       </Card>
+
+      {/* Alert Dialog showing which class has the highest probability */}
+      {/* <AlertDialog open={true}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog> */}
     </div>
   );
 }
