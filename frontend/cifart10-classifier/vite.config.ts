@@ -14,6 +14,14 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      '/post': {
+        target: 'http://localhost:8000', // your backend URL
+        changeOrigin: true,
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

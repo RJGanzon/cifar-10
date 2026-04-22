@@ -13,7 +13,7 @@ app = Flask(__name__)
 def hello_world():
     return("Hello world")
 
-@app.route('/post/check-type', methods= ["POST"])
+@app.route('/post/predict-type', methods= ["POST"])
 def predictImage():
     data = request.json
     prediction = checkClass(data['img_url'])

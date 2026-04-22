@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
+import axios from "axios";
 import {
   Card,
   CardDescription,
@@ -9,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import "./App.css";
-import frogimg from "./assets/frog.jpg";
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(false);
@@ -24,6 +24,14 @@ function App() {
       const imgURL = URL.createObjectURL(file);
       setCurrentImage(imgURL);
     }
+  }
+
+  async function predictClass(imgURL: string) {
+    const res = await axios.post("/post/predict-type", {
+      img_url: imgURL,
+    });
+
+    return res.data;
   }
 
   return (
@@ -68,7 +76,7 @@ function App() {
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="w-full">View Event</Button>
+          <Button className="w-full">Get Type</Button>
         </CardFooter>
       </Card>
     </div>
