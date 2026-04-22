@@ -15,15 +15,15 @@ def hello_world():
 
 @app.route('/post/predict-type', methods= ["POST"])
 def predictImage():
-    data = request.json
-    prediction = checkClass(data['img_url'])
+    file = request.files['image']
+    prediction = checkClass(file)
     return(jsonify({'prediction': prediction.tolist()}))
 
 
 def checkClass(url):
 
     #Image Preprocessing
-    image = Image.open(url).convert("RGB")
+    image = Image.open(url.stream).convert("RGB")
     image = image.resize((32, 32))
     img_array = np.array(image, dtype=np.float32)
     img_array = img_array / 255.0

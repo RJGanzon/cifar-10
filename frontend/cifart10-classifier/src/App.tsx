@@ -13,23 +13,24 @@ import "./App.css";
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
+  const [currentImage, setCurrentImage] = useState<File | null>(null);
+  const [selectedImageURL, setselectedImageURL] = useState<string>("");
+
   const uploadImage = useRef<HTMLInputElement>(null);
 
-  function updateImageUrl() {
+  function updateImage() {
     const file = uploadImage.current?.files?.[0];
     if (file) {
       setUploadedImage(true);
-      //Converts file object to a useable URL
-      const imgURL = URL.createObjectURL(file);
-      setCurrentImage(imgURL);
+      setCurrentImage(file);
+      setselectedImageURL(URL.createObjectURL(file));
     }
   }
 
-  async function predictClass(imgURL: string) {
-    const res = await axios.post("/post/predict-type", {
-      img_url: imgURL,
-    });
+  async function predictClass(img: File) {
+    const formData = new FormData();
+    formData.append("image", img);
+    const res = await axios.post("/post/predict-type", formData);
 
     return res.data;
   }
@@ -49,13 +50,13 @@ function App() {
             className="hidden"
             ref={uploadImage}
             onChange={() => {
-              updateImageUrl();
+              updateImage();
             }}
           ></input>
           {uploadedImage ? (
             <>
               <img
-                src={currentImage}
+                src={selectedImageURL}
                 alt="Event cover"
                 className="absolute z-20 aspect-video w-full object-cover brightness-90"
               />
@@ -78,8 +79,11 @@ function App() {
         <CardFooter>
           <Button
             className="w-full"
-            onClick={() => {
-              predictClass(currentImage);
+            onClick={async () => {
+              if (currentImage) {
+                const classPredictions = await predictClass(currentImage);
+                console.log(classPredictions);
+              }
             }}
             disabled={!uploadedImage}
           >
