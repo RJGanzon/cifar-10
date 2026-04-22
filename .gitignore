@@ -1,0 +1,30 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Claude
+.claude/
+
+# Environment variables / secrets
+.env
+.env.local
+*.key
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML model artifacts (optional — see note below)
+# *.keras
+# *.h5
+# *.pkl
