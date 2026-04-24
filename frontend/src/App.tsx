@@ -142,7 +142,7 @@ function App() {
             <AlertDialogTitle className="text-center">
               The model predicted:
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-2xl font-bold text-foreground py-4 capitalize">
+            <AlertDialogDescription className="text-center text-2xl font-bold text-foreground py-1 capitalize">
               {classHighest}
             </AlertDialogDescription>
           </AlertDialogHeader>
