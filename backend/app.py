@@ -23,8 +23,9 @@ def predictImage():
 @app.route('/post/insert-data', methods=["POST"])
 def insertData():
     data = request.json
-    print(data['predictedClass'])
-    print(data['isCorrect'])
+    predictedClass = data['predictedClass']
+    isCorrect = data['isCorrect']
+    insertRow([predictedClass, isCorrect])
     return {"status": "ok"}, 201
 
 
