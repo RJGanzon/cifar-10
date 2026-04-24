@@ -28,6 +28,7 @@ function App() {
   const [currentImage, setCurrentImage] = useState<File | null>(null);
   const [selectedImageURL, setselectedImageURL] = useState<string>("");
   const [openState, setOpenState] = useState(false);
+  const [classHighest, setClassHighest] = useState<string>("");
   const uploadImage = useRef<HTMLInputElement>(null);
 
   const CIFAR_CLASSES = [
@@ -104,9 +105,13 @@ function App() {
         <CardHeader className="flex flex-col items-center">
           <CardTitle>Cifar-10 Classifier</CardTitle>
           <CardDescription className="text-center">
-            Upload an image from your device and the CIFAR-10 model will
-            classify it into one of ten categories: airplane, automobile, bird,
-            cat, deer, dog, frog, horse, ship, or truck.
+            Upload an image from one of ten categories
+            <span className="font-semibold italic">
+              {" "}
+              (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, or
+              truck){" "}
+            </span>
+            and the CIFAR-10 model will attempt to classify it.
           </CardDescription>
         </CardHeader>
         <CardFooter>
@@ -119,6 +124,8 @@ function App() {
                   classPredictions.prediction[0],
                 );
                 console.log(class_highest);
+                setClassHighest(class_highest);
+                setOpenState(true);
               }
             }}
             disabled={!uploadedImage}
@@ -129,21 +136,26 @@ function App() {
       </Card>
 
       {/* Alert Dialog showing which class has the highest probability */}
-      {/* <AlertDialog open={true}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account from our servers.
+      <AlertDialog open={openState}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader className="items-center">
+            <AlertDialogTitle className="text-center">
+              The model predicted:
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-2xl font-bold text-foreground py-4 capitalize">
+              {classHighest}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Continue</AlertDialogAction>
+            <AlertDialogCancel className="bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white hover:border-red-700 dark:bg-red-700 dark:text-white dark:border-red-700 dark:hover:bg-red-800 dark:hover:text-white dark:hover:border-red-800">
+              No, incorrect
+            </AlertDialogCancel>
+            <AlertDialogAction className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800">
+              Yes, correct
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog> */}
+      </AlertDialog>
     </div>
   );
 }
