@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 import keras
 from PIL import Image
 import numpy as np
+from db import insertRow
 
 
 model = keras.models.load_model('../cnn_cifar_10.keras')
@@ -19,6 +20,13 @@ def predictImage():
     prediction = checkClass(file)
     return(jsonify({'prediction': prediction.tolist()}))
 
+@app.route('/post/insert-data', methods=["POST"])
+def insertData():
+    data = request.json
+    print(data['predictedClass'])
+    print(data['isCorrect'])
+    return {"status": "ok"}, 201
+
 
 def checkClass(url):
 
@@ -30,4 +38,7 @@ def checkClass(url):
     img_array = np.expand_dims(img_array, axis=0)
 
     return model.predict(img_array)
+
+
+
 

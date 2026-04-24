@@ -56,6 +56,14 @@ function App() {
     }
   }
 
+  async function insertRow(predictedClass: string, isCorrect: boolean) {
+    const res = await axios.post("/post/insert-data", {
+      predictedClass: predictedClass,
+      isCorrect: isCorrect,
+    });
+    return res.data;
+  }
+
   async function predictClass(img: File) {
     const formData = new FormData();
     formData.append("image", img);
@@ -147,10 +155,22 @@ function App() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white hover:border-red-700 dark:bg-red-700 dark:text-white dark:border-red-700 dark:hover:bg-red-800 dark:hover:text-white dark:hover:border-red-800">
+            <AlertDialogCancel
+              className="bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white hover:border-red-700 dark:bg-red-700 dark:text-white dark:border-red-700 dark:hover:bg-red-800 dark:hover:text-white dark:hover:border-red-800"
+              onClick={async () => {
+                insertRow(classHighest, true);
+                setOpenState(false);
+              }}
+            >
               No, incorrect
             </AlertDialogCancel>
-            <AlertDialogAction className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800">
+            <AlertDialogAction
+              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              onClick={async () => {
+                insertRow(classHighest, true);
+                setOpenState(false);
+              }}
+            >
               Yes, correct
             </AlertDialogAction>
           </AlertDialogFooter>
