@@ -4,10 +4,15 @@ import keras
 from PIL import Image
 import numpy as np
 from db import insertRow
+from db import fetchData
 
 
 model = keras.models.load_model('../cnn_cifar_10.keras')
-
+def normalize(rows):
+    return {
+        "true": sum(v for k, v in rows if k),
+        "false": sum(v for k, v in rows if not k),
+    }
 app = Flask(__name__)
 
 @app.route('/')
@@ -27,7 +32,14 @@ def insertData():
     isCorrect = data['isCorrect']
     db = insertRow([predictedClass, isCorrect])
     print(db)
-    return {"status": "ok"}, 201
+    return {"status": "ok",}, 201
+
+
+@app.route('/get/fetchData', methods=['GET'])
+def getTrue():
+    db = fetchData()
+    return {"status": "ok",
+            "db": normalize(db)}, 200
 
 
 def checkClass(url):

@@ -2,12 +2,25 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
 import axios from "axios";
+
+import { Pie, PieChart } from "recharts";
+
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  CardContent,
 } from "@/components/ui/card";
 
 import {
@@ -27,6 +40,8 @@ function App() {
   const [uploadedImage, setUploadedImage] = useState(false);
   const [currentImage, setCurrentImage] = useState<File | null>(null);
   const [selectedImageURL, setselectedImageURL] = useState<string>("");
+  const [predictions, setPredictions] = useState<object>({ true: 0, false: 0 });
+
   const [openState, setOpenState] = useState(false);
   const [classHighest, setClassHighest] = useState<string>("");
   const uploadImage = useRef<HTMLInputElement>(null);
@@ -44,6 +59,26 @@ function App() {
     "truck",
   ];
 
+  const chartData = [
+    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+  ];
+
+  const chartConfig = {
+    visitors: {
+      label: "Visitors",
+    },
+    chrome: {
+      label: "Correct",
+      color: "#22c55e",
+    },
+    safari: {
+      label: "Incorrect",
+      color: "#ef4444",
+    },
+  } satisfies ChartConfig;
+
+  // Gets the image from local
   function updateImage() {
     const file = uploadImage.current?.files?.[0];
     if (file) {
@@ -56,6 +91,8 @@ function App() {
     }
   }
 
+  // Server Functions
+  // Post
   async function insertRow(predictedClass: string, isCorrect: boolean) {
     const res = await axios.post("/post/insert-data", {
       predictedClass: predictedClass,
@@ -72,14 +109,47 @@ function App() {
     return res.data;
   }
 
+  // Get
+  async function getNoOfPredictions() {
+    const res = await axios.get("/get/fetchData");
+
+    const current = res.data.db;
+    console.log(current.false);
+  }
+  // Gets the highest value among 10 classes
   function getHighestPrediction(arr: number[]) {
     const maxIndex = arr.indexOf(Math.max(...arr));
     return CIFAR_CLASSES[maxIndex];
   }
 
   return (
-    <div className="flex items-center justify-center h-screen bg-black bg-[radial-gradient(ellipse_100%_60%_at_50%_100%,rgba(255,255,255,0.12),transparent_70%)]">
-      <Card className="relative mx-auto w-full max-w-sm pt-0">
+    <div className="flex gap-30 items-center justify-center h-screen bg-black bg-[radial-gradient(ellipse_100%_60%_at_50%_100%,rgba(255,255,255,0.12),transparent_70%)]">
+      {/* Chart Card */}
+      <Card className="flex flex-col w-full max-w-sm">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Pie Chart - Legend</CardTitle>
+          <CardDescription>January - June 2024</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                content={<ChartTooltipContent nameKey="browser" hideLabel />}
+              />
+              <Pie data={chartData} dataKey="visitors" />
+              <ChartLegend
+                content={<ChartLegendContent nameKey="browser" />}
+                className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+              />
+            </PieChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+      {/* Predict Class Card */}
+      <Card className="relative w-full max-w-sm pt-0">
         <div
           className="relative z-20 flex aspect-video w-full items-center justify-center rounded-lg hover:cursor-pointer bg-muted/40 transition duration-200 hover:bg-muted/100 text-muted-foreground"
           onClick={() => {
@@ -131,7 +201,6 @@ function App() {
                 const class_highest = getHighestPrediction(
                   classPredictions.prediction[0],
                 );
-                console.log(class_highest);
                 setClassHighest(class_highest);
                 setOpenState(true);
               }
@@ -160,6 +229,7 @@ function App() {
               onClick={async () => {
                 insertRow(classHighest, false);
                 setOpenState(false);
+                getNoOfPredictions();
               }}
             >
               No, incorrect

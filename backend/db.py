@@ -2,14 +2,12 @@ import os
 
 import psycopg
 from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv("../.env")
+# Get the connection string from the environment variable
+conn_string = os.getenv("DATABASE_URL")
 
 def insertRow(data):
-    # Load environment variables from .env file
-    load_dotenv("../.env")
-
-    # Get the connection string from the environment variable
-    conn_string = os.getenv("DATABASE_URL")
-
     try:    
         with psycopg.connect(conn_string) as conn:
             print("Connection established")
@@ -25,3 +23,20 @@ def insertRow(data):
 
     except Exception as e:
         return("Connection failed.")
+    
+def fetchData():
+    try:    
+        with psycopg.connect(conn_string) as conn:
+            print("Connection established")
+
+            # Open a cursor to perform database operations
+            with conn.cursor() as cur:
+                # Insert a single book record
+                cur.execute(
+                    "SELECT is_true, COUNT(*) FROM predictions GROUP BY is_true"
+                )
+                rows = cur.fetchall()
+                return(rows)
+
+    except Exception as e:
+        return("Connection failed.")   

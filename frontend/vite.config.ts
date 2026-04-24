@@ -19,7 +19,11 @@ export default defineConfig({
       '/post': {
         target: 'http://localhost:5000', // your backend URL
         changeOrigin: true,
-      }
+      },
+      '/get': {
+        target: 'http://localhost:5000', // your backend URL
+        changeOrigin: true,
+      },     
     }
   },
   resolve: {
