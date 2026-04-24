@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
 import { Pie, PieChart } from "recharts";
@@ -37,10 +37,19 @@ import {
 import "./App.css";
 
 function App() {
+  // States
   const [uploadedImage, setUploadedImage] = useState(false);
   const [currentImage, setCurrentImage] = useState<File | null>(null);
   const [selectedImageURL, setselectedImageURL] = useState<string>("");
-  const [predictions, setPredictions] = useState<object>({ true: 0, false: 0 });
+
+  type Predictions = {
+    true: number;
+    false: number;
+  };
+  const [predictions, setPredictions] = useState<Predictions>({
+    true: 0,
+    false: 0,
+  });
 
   const [openState, setOpenState] = useState(false);
   const [classHighest, setClassHighest] = useState<string>("");
@@ -59,20 +68,25 @@ function App() {
     "truck",
   ];
 
+  // Effects
+  useEffect(() => {
+    getNoOfPredictions();
+  }, []);
+
   const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    { isPredicted: "correct", amount: predictions.true, fill: "#22c55e" },
+    { isPredicted: "incorrect", amount: predictions.false, fill: "#ef4444" },
   ];
 
   const chartConfig = {
-    visitors: {
-      label: "Visitors",
+    amount: {
+      label: "Predictions",
     },
-    chrome: {
+    correct: {
       label: "Correct",
       color: "#22c55e",
     },
-    safari: {
+    incorrect: {
       label: "Incorrect",
       color: "#ef4444",
     },
@@ -112,9 +126,8 @@ function App() {
   // Get
   async function getNoOfPredictions() {
     const res = await axios.get("/get/fetchData");
-
     const current = res.data.db;
-    console.log(current.false);
+    setPredictions(current);
   }
   // Gets the highest value among 10 classes
   function getHighestPrediction(arr: number[]) {
@@ -127,8 +140,8 @@ function App() {
       {/* Chart Card */}
       <Card className="flex flex-col w-full max-w-sm">
         <CardHeader className="items-center pb-0">
-          <CardTitle>Pie Chart - Legend</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
+          <CardTitle>Prediction Accuracy</CardTitle>
+          <CardDescription>CIFAR-10 classification results</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 pb-0">
           <ChartContainer
@@ -137,11 +150,13 @@ function App() {
           >
             <PieChart>
               <ChartTooltip
-                content={<ChartTooltipContent nameKey="browser" hideLabel />}
+                content={
+                  <ChartTooltipContent nameKey="isPredicted" hideLabel />
+                }
               />
-              <Pie data={chartData} dataKey="visitors" />
+              <Pie data={chartData} dataKey="amount" />
               <ChartLegend
-                content={<ChartLegendContent nameKey="browser" />}
+                content={<ChartLegendContent nameKey="isPredicted" />}
                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
               />
             </PieChart>
@@ -227,9 +242,9 @@ function App() {
             <AlertDialogCancel
               className="bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white hover:border-red-700 dark:bg-red-700 dark:text-white dark:border-red-700 dark:hover:bg-red-800 dark:hover:text-white dark:hover:border-red-800"
               onClick={async () => {
-                insertRow(classHighest, false);
+                await insertRow(classHighest, false);
                 setOpenState(false);
-                getNoOfPredictions();
+                await getNoOfPredictions();
               }}
             >
               No, incorrect
@@ -237,8 +252,9 @@ function App() {
             <AlertDialogAction
               className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
               onClick={async () => {
-                insertRow(classHighest, true);
+                await insertRow(classHighest, true);
                 setOpenState(false);
+                await getNoOfPredictions();
               }}
             >
               Yes, correct
