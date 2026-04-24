@@ -25,7 +25,8 @@ def insertData():
     data = request.json
     predictedClass = data['predictedClass']
     isCorrect = data['isCorrect']
-    insertRow([predictedClass, isCorrect])
+    db = insertRow([predictedClass, isCorrect])
+    print(db)
     return {"status": "ok"}, 201
 
 

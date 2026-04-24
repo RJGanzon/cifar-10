@@ -158,7 +158,7 @@ function App() {
             <AlertDialogCancel
               className="bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white hover:border-red-700 dark:bg-red-700 dark:text-white dark:border-red-700 dark:hover:bg-red-800 dark:hover:text-white dark:hover:border-red-800"
               onClick={async () => {
-                insertRow(classHighest, true);
+                insertRow(classHighest, false);
                 setOpenState(false);
               }}
             >

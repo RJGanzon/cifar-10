@@ -10,7 +10,7 @@ def insertRow(data):
     # Get the connection string from the environment variable
     conn_string = os.getenv("DATABASE_URL")
 
-    try:
+    try:    
         with psycopg.connect(conn_string) as conn:
             print("Connection established")
 
@@ -21,8 +21,7 @@ def insertRow(data):
                     "INSERT INTO predictions (predicted_class, is_true) VALUES (%s, %s);",
                     data,
                 )
-                print("Inserted a row.")
+                return("Inserted a row.")
 
     except Exception as e:
-        print("Connection failed.")
-        print(e)
+        return("Connection failed.")
